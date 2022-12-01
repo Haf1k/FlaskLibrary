@@ -6,6 +6,8 @@
     {% else %}
         <title>Knihovna</title>
     {% endif %}
+
+
   <title>Knihovna</title>
 
   <meta charset="utf-8">
@@ -19,14 +21,18 @@
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Aplikace Knihovna</a>
+      <a class="navbar-brand" href="{{ url_for('home') }}">Aplikace Knihovna</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Home</a></li>
-      <li><a href="#">Vyhledávání</a></li>
-      <li><a href="{{ url_for('login') }}">Přihlášení</a></li>
-      <li><a href="{{ url_for('register') }}">Registrace</a></li>
-      <li><a href="#">O projektu</a></li>
+        {% if not session ['logged_in'] %}
+      <li class="{{ 'active' if active_page == 'login' else '' }}"><a href="{{ url_for('login') }}">Přihlášení</a></li>
+      <li class="{{ 'active' if active_page == 'register' else '' }}"><a href="{{ url_for('register') }}">Registrace</a></li>
+      <li class="{{ 'active' if active_page == 'about' else '' }}"><a href={{ url_for('about') }}>Autoři</a></li>
+        {% endif %}
+
+        {% if session ['logged_in'] %}
+
+        {% endif %}
     </ul>
   </div>
 </nav>
@@ -35,6 +41,7 @@
         <div class="col-md-2"></div>
 
         <div class="col-md-8">
+
             {% block content %}
 
             {% endblock %}

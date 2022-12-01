@@ -1,5 +1,7 @@
 flask_pymongo
 flask_login
 flask_wtf
-wtforms
-bcrypt
+wtforms~=3.0.1
+bcrypt~=4.0.1
+pymongo~=4.3.3
+Flask~=2.2.2

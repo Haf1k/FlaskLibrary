@@ -6,16 +6,17 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/venv39" />
+      <excludeFolder url="file://$MODULE_DIR$/knihovna_app/venv39" />
+      <excludeFolder url="file://$MODULE_DIR$/knihovna_app/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (venv39)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (aplikaceKnihovnik)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/../aplikaceKnihovnik\templates" />
+        <option value="$MODULE_DIR$/knihovna_app/templates" />
       </list>
     </option>
   </component>
