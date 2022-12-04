@@ -1,5 +1,5 @@
 import bcrypt
-from flask import render_template, url_for, request, redirect
+from flask import render_template, url_for, request, redirect, abort
 from flask_login import login_user, current_user, login_required
 from wtforms import ValidationError
 from run import app, login_manager
@@ -68,9 +68,15 @@ def register():
 @app.route('/user/<username>', methods=['GET', 'POST'])
 @login_required
 def user_section(username):
-    db.users.update_one( {"username": username}, { "$set": {"fname": "Petr"} } )
+    html = ""
+    if username != current_user.username:
+        abort(403)
+    user_info = db.users.find_one({"username": username})
+    for key, value in user_info.items():
+        html += f"<li>{str(key)}: {str(value)}</li>"
     return f'''
     <h1>{username} uspesne prihlasen</h1>
+    {html}
     '''
 
 
