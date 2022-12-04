@@ -2,9 +2,10 @@ import bcrypt
 from flask import render_template, url_for, request, redirect
 from flask_login import login_user, current_user
 from wtforms import ValidationError
-from knihovna_app import app, login_manager
-from knihovna_app.config import db
-from knihovna_app.models import User
+from run import app, login_manager
+from forms import RegistrationForm
+from config import db
+from models import User
 
 
 @app.route('/')
@@ -48,7 +49,7 @@ def register():
                         request.form['username'],
                         hashPassword)
             db.users.insert_one(user.__dict__)
-            return redirect(url_for('main'))
+            return redirect(url_for('home'))
         ValidationError('Nejde to. Uzivatel jiz existuje.')
         return render_template('register.html')
     return render_template('register.html')
