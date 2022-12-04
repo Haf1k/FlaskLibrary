@@ -1,11 +1,12 @@
 import bcrypt
 from flask import render_template, url_for, request, redirect
-from flask_login import login_user, current_user
+from flask_login import login_user, current_user, login_required
 from wtforms import ValidationError
 from run import app, login_manager
 from forms import RegistrationForm, LoginForm
 from config import db
 from models import User
+from helper import make_user_object
 
 
 @app.route('/')
@@ -15,21 +16,25 @@ def home():
 
 @login_manager.user_loader
 def load_user(user):
-    return User.query.get(int(user))
+    u = db.users.find_one({"username": user})
+    if not u:
+        return None
+    return make_user_object(u)
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     form = LoginForm(csrf_enabled=False)
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('user_section', username=current_user.username))
     # if request.method == 'POST':
     if form.validate_on_submit():
         user = db.users.find_one({'username': form.username.data})
 
         if user and bcrypt.checkpw(form.password.data.encode('utf-8'), user['password'], ):
-            # login_user(user, True)
-            return "<h1>Úspěšně přihlášeno</h1>"
+            user_obj = make_user_object(user)
+            login_user(user_obj, True)
+            return redirect(url_for('user_section', username=user_obj.username))
         else:
             return "Neuspech. Spatne heslo nebo jmeno."
     return render_template('login.html', form=form)
@@ -58,6 +63,15 @@ def register():
         ValidationError('Nejde to. Uzivatel jiz existuje.')
         return render_template('register.html', form=form)
     return render_template('register.html', form=form)
+
+
+@app.route('/user/<username>', methods=['GET', 'POST'])
+@login_required
+def user_section(username):
+    db.users.update_one( {"username": username}, { "$set": {"fname": "Petr"} } )
+    return f'''
+    <h1>{username} uspesne prihlasen</h1>
+    '''
 
 
 @app.route('/about')

@@ -1,9 +1,11 @@
 # This file contains the models used in the database. It defines the tables and columns used in the database.
+from flask_login import UserMixin
 
 
-class User:
+class User(UserMixin):
     def __init__(self, fname: object, lname: object, birthnum: object, email: object, street: object, city: object,
-                 zip: object, username: object, password: object) -> object:
+                 zip: object, username: object, password: object, role=None, borrowed_books=[], favorites=[],
+                 activated=False, _id=None) -> object:
         self.fname = fname
         self.lname = lname
         self.birthnum = birthnum
@@ -13,10 +15,26 @@ class User:
         self.zip = zip
         self.username = username
         self.password = password
-        self.role = None
-        self.borrowed_books = []
-        self.favorites = []
-        self.activated = False
+        self.role = role
+        self.borrowed_books = borrowed_books
+        self.favorites = favorites
+        self.activated = activated
+        self._id = _id
+
+    @staticmethod
+    def is_authenticated():
+        return True
+
+    @staticmethod
+    def is_active():
+        return True
+
+    @staticmethod
+    def is_anonymous():
+        return False
+
+    def get_id(self):
+        return self.username
 
     # Basic users methods
     def borrow_book(self, book):
