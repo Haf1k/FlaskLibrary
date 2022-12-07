@@ -24,3 +24,5 @@ def create_admin():
         db.users.insert_one(admin.__dict__)
 
 
+
+

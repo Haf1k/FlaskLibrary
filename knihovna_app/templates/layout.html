@@ -8,36 +8,51 @@
     {% endif %}
 
 
-  <title>Knihovna</title>
+    <title>Knihovna</title>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 
 <nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="{{ url_for('home') }}">Aplikace Knihovna</a>
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('home') }}">Aplikace Knihovna</a>
+        </div>
+
+        {% if current_user.is_authenticated %}
+            <ul class="nav navbar-nav">
+                <li class="{{ 'active' if active_page == 'user_section' else '' }}"><a href={{ url_for('user_section',
+                username=current_user.username) }}>Účet</a></li>
+                <li class="{{ 'active' if active_page == 'about' else '' }}"><a href={{ url_for('about') }}>Autoři</a>
+                </li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="{{ 'active' if active_page == 'logout' else '' }}"><a
+                        href={{ url_for('logout') }}>Odhlásit</a></li>
+            </ul>
+
+
+        {% else %}
+            <ul class="nav navbar-nav">
+            <li class="{{ 'active' if active_page == 'login' else '' }}"><a href="{{ url_for('login') }}">Přihlášení</a>
+            </li>
+            <li class="{{ 'active' if active_page == 'register' else '' }}"><a href="{{ url_for('register') }}">Registrace</a>
+            </li>
+            <li class="{{ 'active' if active_page == 'about' else '' }}"><a href={{ url_for('about') }}>Autoři</a></li>
+        {% endif %}
+        </ul>
+
     </div>
-    <ul class="nav navbar-nav">
-        {% if not session ['logged_in'] %}
-      <li class="{{ 'active' if active_page == 'login' else '' }}"><a href="{{ url_for('login') }}">Přihlášení</a></li>
-      <li class="{{ 'active' if active_page == 'register' else '' }}"><a href="{{ url_for('register') }}">Registrace</a></li>
-      <li class="{{ 'active' if active_page == 'about' else '' }}"><a href={{ url_for('about') }}>Autoři</a></li>
-        {% endif %}
-
-        {% if session ['logged_in'] %}
-
-        {% endif %}
-    </ul>
-  </div>
 </nav>
-<main class ="container.fluid">
-    <div class = "row">
+<main class="container.fluid">
+    <div class="row">
         <div class="col-md-2"></div>
 
         <div class="col-md-8">

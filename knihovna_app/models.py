@@ -62,14 +62,14 @@ class User(UserMixin):
 
 
 class Book:
-    def __init__(self, title, author, release_year, num_pages, num_pcs, picture):
+    def __init__(self, title, author, release_year, num_pages, num_pcs, picture=None, available=True):
         self.title = title
         self.author = author
         self.release_year = release_year
         self.num_pages = num_pages
         self.num_pcs = num_pcs
         self.picture = picture
-        self.available = False
+        self.available = available
         self.borrowed_by = []
 
     def borrow(self, user):

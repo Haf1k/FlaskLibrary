@@ -1,12 +1,13 @@
 import bcrypt
-from flask import render_template, url_for, request, redirect, abort
-from flask_login import login_user, current_user, login_required
+from flask import render_template, url_for, request, redirect, abort, flash
+from flask_login import login_user, current_user, login_required, logout_user
 from wtforms import ValidationError
 from run import app, login_manager
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm, CreateBookForm
 from config import db
-from models import User
+from models import User, Book
 from helper import make_user_object
+
 
 
 @app.route('/')
@@ -68,18 +69,29 @@ def register():
 @app.route('/user/<username>', methods=['GET', 'POST'])
 @login_required
 def user_section(username):
-    html = ""
     if username != current_user.username:
         abort(403)
-    user_info = db.users.find_one({"username": username})
-    for key, value in user_info.items():
-        html += f"<li>{str(key)}: {str(value)}</li>"
-    return f'''
-    <h1>{username} uspesne prihlasen</h1>
-    {html}
-    '''
+    book_form = CreateBookForm(csrf=False)
+    if book_form.validate_on_submit():
+        book = Book(book_form.title.data,
+                    book_form.author.data,
+                    book_form.release_year.data,
+                    book_form.num_pages.data,
+                    book_form.num_pcs.data,
+                    book_form.picture.data,
+                    book_form.available.data)
+        db.books.insert_one(book.__dict__)
+    return render_template('user_section.html', book_form=book_form)
+
 
 
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
