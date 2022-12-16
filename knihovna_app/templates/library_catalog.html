@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Účet
+{% endblock %}
+
+{% set active_page = "user_section" %}
+
+{% block content %}
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Obrázek</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Název knihy</th>
+            <th scope="col">Počet volných kusů</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+        <tr>
+            <th scope="row">{{ loop.index0 }}</th>
+            <td>{{ book["picture"] }}</td>
+            <td>{{ book["author"] }}</td>
+            <td>{{ book["title"] }}</td>
+            <td>{{ book["num_pcs"] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

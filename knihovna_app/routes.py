@@ -83,7 +83,13 @@ def user_section(username):
         db.books.insert_one(book.__dict__)
     return render_template('user_section.html', book_form=book_form)
 
-
+@app.route('/user/<username>/library_catalog', methods=['GET', 'POST'])
+@login_required
+def library_catalog(username):
+    if username != current_user.username:
+        abort(403)
+    books = db.books.find({})
+    return render_template('library_catalog.html', books=books)
 
 @app.route('/about')
 def about():
