@@ -8,4 +8,9 @@ cluster = pymongo.MongoClient(
     "mongodb+srv://aplknihovnice:S18HreOHOFbZ0Gac@knihovnadb.cwbkq6y.mongodb.net/?retryWrites=true&w=majority")
 db = cluster['knihovnadb']
 
+db.users.create_index('email', unique=True)
+db.users.create_index('username', unique=True)
+db.users.create_index('birthnum', unique=True)
+
+
 

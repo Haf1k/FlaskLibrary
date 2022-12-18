@@ -13,7 +13,7 @@
         <div class="container">
 
 {#            <button type="button" class="btn btn-secondary btn-lg" role="button" aria-pressed="true">#}
-            <a href="{{ url_for('library_catalog', username=current_user.username) }}" class="btn btn-success btn-lg"
+            <a href="{{ url_for('library_catalog') }}" class="btn btn-success btn-lg"
                role="button" >Katalog knih</a>
 {#            </button>#}
             <button type="button" class="btn btn-danger btn-lg" role="button" aria-pressed="true">Vrátit knihu
@@ -50,7 +50,7 @@
                         </div>
                         <div class="modal-body">
                             <form class="form-signin" method="POST"
-                                  action="{{ url_for('user_section', username=current_user.username) }}">
+                                  action="{{ url_for('user_section') }}">
                                 {{ book_form.csrf_token }}
                                 <div class="form-group">
                                     {{ book_form.title.label }}
@@ -95,7 +95,7 @@
                         </div>
                         <div class="modal-body">
                             <form class="form-signin" method="POST"
-                                  action="{{ url_for('user_section', username=current_user.username) }}">
+                                  action="{{ url_for('user_section') }}">
                                 {{ book_form.csrf_token }}
                                 <div class="form-group">
 
