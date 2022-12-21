@@ -54,5 +54,4 @@ class CreateBookForm(FlaskForm):
                            validators=[DataRequired(),
                                        NumberRange(min=0, max=9999, message="Zadejte platný počet výtisků")])
     picture = FileField("Obrázek titulní strany")
-    available = BooleanField("Umožnit zapůjčení", validators=[DataRequired()])
     submit = SubmitField('Uložit')

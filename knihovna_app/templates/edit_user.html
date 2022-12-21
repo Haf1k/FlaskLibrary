@@ -61,4 +61,35 @@
         </form>
     </table>
 
+    <h3>Knihy zapůjčené uživatelem</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Obrázek</th>
+            <th scope="col">Název knihy</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Počet stran</th>
+            <th scope="col">Rok vydání</th>
+            <th scope="col"></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in borrowed_books %}
+            <tr>
+                <th scope="row">{{ loop.index0 }}</th>
+                <td>{{ book["picture"] }}</td>
+                <td>{{ book["title"] }}</td>
+                <td>{{ book["author"] }}</td>
+                <td>{{ book["num_pages"] }}</td>
+                <td>{{ book["release_year"] }}</td>
+                <td><a href="{{ url_for('give_back', book_id = book["_id"]|string(), username=user["username"]) }}">Odebrat</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+<a href="{{ url_for("give_user_book", user_id=user["_id"]|string()) }}" class="btn btn-primary btn-lg btn-block" role="button">Přiřadit uživateli knihu</a>
+
 {% endblock %}

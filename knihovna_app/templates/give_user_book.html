@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Přiřadit knihu uživateli
+{% endblock %}
+
+{% set active_page = "users_catalog" %}
+
+{% block content %}
+
+    <h3>Databáze knih</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Obrázek</th>
+            <th scope="col">Název knihy</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Počet stran</th>
+            <th scope="col">Rok vydání</th>
+            <th scope="col">Počet volných kusů</th>
+            <th scope="col"></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+            <tr>
+                <th scope="row">{{ loop.index0 }}</th>
+                <td>{{ book["picture"] }}</td>
+                <td>{{ book["title"] }}</td>
+                <td>{{ book["author"] }}</td>
+                <td>{{ book["num_pages"] }}</td>
+                <td>{{ book["release_year"] }}</td>
+                <td>{{ book["num_pcs"] }}</td>
+                <td><a href="{{ url_for('borrow', book_id = book["_id"]|string(), username=user["username"]) }}">Přiradit</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+{% endblock %}
