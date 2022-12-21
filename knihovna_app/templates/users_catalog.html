@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Seznam uživatelů
+{% endblock %}
+
+{% set active_page = "users_catalog" %}
+
+{% block content %}
+
+    <h3>Seznam uživatelů</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Jméno</th>
+            <th scope="col">Přijmení</th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Uživatelské jméno</th>
+            <th scope="col">Město</th>
+            <th scope="col">Ulice</th>
+            <th scope="col"></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <th scope="row">{{ loop.index0 }}</th>
+                <td>{{ user["fname"] }}</td>
+                <td>{{ user["lname"] }}</td>
+                <td>{{ user["email"] }}</td>
+                <td>{{ user["username"] }}</td>
+                <td>{{ user["city"] }}</td>
+                <td>{{ user["street"] }}</td>
+                <td><a href="{{ url_for('edit_user', user_id = user["_id"]|string()) }}">Upravit</a></td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %}

@@ -38,80 +38,80 @@
 
             {# ================================= Modal for adding books ========================================= #}
 
-            <div class="modal fade" id="add_book_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="exampleModalLabel">Zadejte informace o knize</h3>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form class="form-signin" method="POST"
-                                  action="{{ url_for('user_section') }}">
-                                {{ book_form.csrf_token }}
-                                <div class="form-group">
-                                    {{ book_form.title.label }}
-                                    {{ book_form.title(class="form-control", placeholder="Název knihy") }}
-                                    {{ book_form.author.label }}
-                                    {{ book_form.author(class="form-control", placeholder="Jméno autora") }}
-                                    {{ book_form.release_year.label }}
-                                    {{ book_form.release_year(class="form-control", placeholder="Rok vydání") }}
-                                    {{ book_form.num_pages.label }}
-                                    {{ book_form.num_pages(class="form-control", placeholder="Počet stran") }}
-                                    {{ book_form.num_pcs.label }}
-                                    {{ book_form.num_pcs(class="form-control", placeholder="Počet výtisků v knihovně") }}
-                                    {{ book_form.picture.label }}
-                                    {{ book_form.picture(class="form-control", placeholder="Obrázek titulní strany") }}
-                                    {{ book_form.available.label }}
-                                    {{ book_form.available(class="form-chceck-input",type="checkbox", placeholder="Umožnit zapůjčení") }}
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
-                            {{ book_form.submit(class="btn btn-primary") }}
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+{#            <div class="modal fade" id="add_book_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"#}
+{#                 aria-hidden="true">#}
+{#                <div class="modal-dialog" role="document">#}
+{#                    <div class="modal-content">#}
+{#                        <div class="modal-header">#}
+{#                            <h3 class="modal-title" id="exampleModalLabel">Zadejte informace o knize</h3>#}
+{#                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#                                <span aria-hidden="true">&times;</span>#}
+{#                            </button>#}
+{#                        </div>#}
+{#                        <div class="modal-body">#}
+{#                            <form class="form-signin" method="POST"#}
+{#                                  action="{{ url_for('user_section') }}">#}
+{#                                {{ book_form.csrf_token }}#}
+{#                                <div class="form-group">#}
+{#                                    {{ book_form.title.label }}#}
+{#                                    {{ book_form.title(class="form-control", placeholder="Název knihy") }}#}
+{#                                    {{ book_form.author.label }}#}
+{#                                    {{ book_form.author(class="form-control", placeholder="Jméno autora") }}#}
+{#                                    {{ book_form.release_year.label }}#}
+{#                                    {{ book_form.release_year(class="form-control", placeholder="Rok vydání") }}#}
+{#                                    {{ book_form.num_pages.label }}#}
+{#                                    {{ book_form.num_pages(class="form-control", placeholder="Počet stran") }}#}
+{#                                    {{ book_form.num_pcs.label }}#}
+{#                                    {{ book_form.num_pcs(class="form-control", placeholder="Počet výtisků v knihovně") }}#}
+{#                                    {{ book_form.picture.label }}#}
+{#                                    {{ book_form.picture(class="form-control", placeholder="Obrázek titulní strany") }}#}
+{#                                    {{ book_form.available.label }}#}
+{#                                    {{ book_form.available(class="form-chceck-input",type="checkbox", placeholder="Umožnit zapůjčení") }}#}
+{#                                </div>#}
+{#                        </div>#}
+{#                        <div class="modal-footer">#}
+{#                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>#}
+{#                            {{ book_form.submit(class="btn btn-primary") }}#}
+{#                            </form>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
             {# ======================================================================================================#}
 
             {# ================================= Modal for veryfing users ===========================================#}
 
 
-            <div class="modal fade" id="verify_user_modal" tabindex="-1" role="dialog"
-                 aria-labelledby="exampleModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title" id="exampleModalLabel">Vyberte uživatele, kterého chcete ověřit</h3>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form class="form-signin" method="POST"
-                                  action="{{ url_for('user_section') }}">
-                                {{ book_form.csrf_token }}
-                                <div class="form-group">
-
-
-
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
-                            {{ book_form.submit(class="btn btn-primary") }}
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+{#            <div class="modal fade" id="verify_user_modal" tabindex="-1" role="dialog"#}
+{#                 aria-labelledby="exampleModalLabel"#}
+{#                 aria-hidden="true">#}
+{#                <div class="modal-dialog" role="document">#}
+{#                    <div class="modal-content">#}
+{#                        <div class="modal-header">#}
+{#                            <h3 class="modal-title" id="exampleModalLabel">Vyberte uživatele, kterého chcete ověřit</h3>#}
+{#                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#                                <span aria-hidden="true">&times;</span>#}
+{#                            </button>#}
+{#                        </div>#}
+{#                        <div class="modal-body">#}
+{#                            <form class="form-signin" method="POST"#}
+{#                                  action="{{ url_for('user_section') }}">#}
+{#                                {{ book_form.csrf_token }}#}
+{#                                <div class="form-group">#}
+{##}
+{##}
+{##}
+{#                                </div>#}
+{#                        </div>#}
+{#                        <div class="modal-footer">#}
+{#                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>#}
+{#                            {{ book_form.submit(class="btn btn-primary") }}#}
+{#                            </form>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
 
 
     {% endif %}

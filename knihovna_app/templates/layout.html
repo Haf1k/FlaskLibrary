@@ -26,14 +26,23 @@
 
         {% if current_user.is_authenticated %}
             <ul class="nav navbar-nav">
-                <li class="{{ 'active' if active_page == 'user_section' else '' }}">
-                    <a href={{ url_for('user_section') }}>Účet</a></li>
-                <li class="{{ 'active' if active_page == 'about' else '' }}"><a href={{ url_for('about') }}>Autoři</a>
+                <li class="{{ 'active' if active_page == 'library_catalog' else '' }}">
+                    <a href={{ url_for('library_catalog') }}>Katalog knih</a></li>
+                {% if current_user.role == "Admin" %}
+                    <li class="{{ 'active' if active_page == 'users_catalog' else '' }}">
+                        <a href={{ url_for('users_catalog') }}>Seznam uživatelů</a></li>
+                {% else %}
+                    <li class="{{ 'active' if active_page == 'user_section' else '' }}">
+                        <a href={{ url_for('user_section') }}>Účet</a></li>
+                {% endif %}
+                <li class="{{ 'active' if active_page == 'about' else '' }}">
+                    <a href={{ url_for('about') }}>Autoři</a>
                 </li>
 
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
+
                 <li class="{{ 'active' if active_page == 'logout' else '' }}"><a
                         href={{ url_for('logout') }}>Odhlásit</a></li>
             </ul>

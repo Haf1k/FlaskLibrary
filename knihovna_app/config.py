@@ -12,5 +12,7 @@ db.users.create_index('email', unique=True)
 db.users.create_index('username', unique=True)
 db.users.create_index('birthnum', unique=True)
 
+# db.users.create_index('borrowed_books.time_stamp', expireAfterSeconds=60) # is deleting whole user
+
 
 

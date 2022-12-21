@@ -68,8 +68,12 @@ Registrace
 {#                <input type="password" id="password" class="form-control" placeholder="Heslo" required autofocus>#}
             </div>
 
-            <button type="submit" class="btn btn-secondary btn-lg btn-block">Registruj se</button>
+            {% if current_user.role == "Admin" %}
+                <button type="submit" class="btn btn-secondary btn-lg btn-block">Vytvořit účet</button>
+            {% else %}
+                <button type="submit" class="btn btn-secondary btn-lg btn-block">Registruj se</button>
                 <li><a href="{{ url_for('login') }}">Máte účet? Přihlašte se zde.</a></li>
+            {% endif %}
         </form>
     </div>
 

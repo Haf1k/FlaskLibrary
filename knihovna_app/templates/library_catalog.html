@@ -1,12 +1,134 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Účet
+    Katalog knih
 {% endblock %}
 
-{% set active_page = "user_section" %}
+{% set active_page = "library_catalog" %}
 
 {% block content %}
+
+    {# ================================= Admin Functions ======================================================= #}
+
+    {% if current_user.role == "Admin" %}
+        <div class="container">
+
+
+        <button type="button" class="btn btn-secondary btn-lg" data-toggle="modal" role="button"
+                aria-pressed="true" data-target="#add_book_modal">Přidat knihu
+        </button>
+        <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" role="button" aria-pressed="true"
+                data-target="#verify_user_modal">Ověřit uživatele
+        </button>
+        <a href="register" class="btn btn-success btn-lg" role="button">Vytvořit uživatele</a>
+        </button>
+        <a href="users_catalog" class="btn btn-warning btn-lg" role="button">Databáze uživatelů</a>
+
+        {# ================================= Modal for adding books ========================================= #}
+
+        <div class="modal fade" id="add_book_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3 class="modal-title" id="exampleModalLabel">Zadejte informace o knize</h3>
+
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-signin" method="POST"
+                              action="{{ url_for('library_catalog') }}">
+                            {{ book_form.csrf_token }}
+                            <div class="form-group">
+                                {{ book_form.title.label }}
+                                {{ book_form.title(class="form-control", placeholder="Název knihy") }}
+                                {{ book_form.author.label }}
+                                {{ book_form.author(class="form-control", placeholder="Jméno autora") }}
+                                {{ book_form.release_year.label }}
+                                {{ book_form.release_year(class="form-control", placeholder="Rok vydání") }}
+                                {{ book_form.num_pages.label }}
+                                {{ book_form.num_pages(class="form-control", placeholder="Počet stran") }}
+                                {{ book_form.num_pcs.label }}
+                                {{ book_form.num_pcs(class="form-control", placeholder="Počet výtisků v knihovně") }}
+                                {{ book_form.picture.label }}
+                                {{ book_form.picture(class="form-control", placeholder="Obrázek titulní strany") }}
+                                {{ book_form.available.label }}
+                                {{ book_form.available(class="form-check-input",type="checkbox", placeholder="Umožnit zapůjčení") }}
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+                        {{ book_form.submit(class="btn btn-primary") }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+{# ================================================================================================= #}
+{# ================================= Modal for verifying users ========================================= #}
+
+<div class="modal fade" id="verify_user_modal" tabindex="-1" role="dialog"#}
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title" id="exampleModalLabel">Uživatelé čekající na ověření</h3>
+
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Jméno</th>
+                            <th scope="col">Přijmení</th>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">Uživatelské jméno</th>
+                            <th scope="col">Město</th>
+                            <th scope="col">Ulice</th>
+                            <th scope="col"></th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in unverified_users %}
+                            <tr>
+                                <th scope="row">{{ loop.index0 }}</th>
+                                <td>{{ user["fname"] }}</td>
+                                <td>{{ user["lname"] }}</td>
+                                <td>{{ user["email"] }}</td>
+                                <td>{{ user["username"] }}</td>
+                                <td>{{ user["city"] }}</td>
+                                <td>{{ user["street"] }}</td>
+                                <td><a href="{{ url_for('verify', user_id = user["_id"]|string()) }}">Ověřit</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+    {# ================================================================================================= #}
 
     <h3>Zapůjčené knihy</h3>
     <table class="table table-striped">
@@ -31,7 +153,7 @@
                 <td>{{ book["author"] }}</td>
                 <td>{{ book["num_pages"] }}</td>
                 <td>{{ book["release_year"] }}</td>
-                <td><a href="{{ url_for('rent', book_id = book["_id"]|string()) }}">Vrátit</a></td>
+                <td><a href="{{ url_for('give_back', book_id = book["_id"]|string()) }}">Vrátit</a></td>
             </tr>
         {% endfor %}
         </tbody>
@@ -63,7 +185,7 @@
                 <td>{{ book["num_pages"] }}</td>
                 <td>{{ book["release_year"] }}</td>
                 <td>{{ book["num_pcs"] }}</td>
-                <td><a href="{{ url_for('rent', book_id = book["_id"]|string()) }}">Půjčit</a></td>
+                <td><a href="{{ url_for('borrow', book_id = book["_id"]|string()) }}">Půjčit</a></td>
             </tr>
         {% endfor %}
         </tbody>

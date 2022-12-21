@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Editace uživatele
+{% endblock %}
+
+{% set active_page = "users_catalog" %}
+
+{% block content %}
+
+    <table class="table table-hover">
+        <form class="form-signin" method="POST"
+              action="{{ url_for('edit_user', user_id=user["_id"]|string()) }}">
+            {{ edit_form.csrf_token }}
+            <tbody>
+            <tr>
+                <td>{{ edit_form.fname.label }}</td>
+                <td>{{ edit_form.fname(class="form-control", value=user["fname"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.lname.label }}</td>
+                <td>{{ edit_form.lname(class="form-control", value=user["lname"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.birthnum.label }}</td>
+                <td>{{ edit_form.birthnum(class="form-control", value=user["birthnum"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.email.label }}</td>
+                <td>{{ edit_form.email(class="form-control", value=user["email"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.street.label }}</td>
+                <td>{{ edit_form.street(class="form-control", value=user["street"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.city.label }}</td>
+                <td>{{ edit_form.city(class="form-control", value=user["city"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.zip.label }}</td>
+                <td>{{ edit_form.zip(class="form-control", value=user["zip"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.username.label }}</td>
+                <td>{{ edit_form.username(class="form-control", value=user["username"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.activated.label }}</td>
+                <td>{{ edit_form.activated(class="form-check-input",type="checkbox", active=True) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.role.label }}</td>
+                <td>{{ edit_form.role(class="form-control", value=user["role"]) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">{{ edit_form.submit(class="btn btn-primary btn-lg btn-block") }}</td>
+            </tr>
+
+            </tbody>
+        </form>
+    </table>
+
+{% endblock %}

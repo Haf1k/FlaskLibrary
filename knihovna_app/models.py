@@ -4,7 +4,7 @@ from flask_login import UserMixin
 
 class User(UserMixin):
     def __init__(self, fname: object, lname: object, birthnum: object, email: object, street: object, city: object,
-                 zip: object, username: object, password: object, role=None, borrowed_books=[], favorites=[],
+                 zip: object, username: object, password: object, role="user", borrowed_books=[], favorites=[],
                  activated=False, _id=None) -> object:
         self.fname = fname
         self.lname = lname
