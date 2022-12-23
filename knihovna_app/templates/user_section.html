@@ -1,120 +1,57 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Účet
+    Editace uživatele uživatelem
 {% endblock %}
 
 {% set active_page = "user_section" %}
 
 {% block content %}
 
-    {% if current_user.role == None %}
+    <table class="table table-hover">
+        <form class="form-signin" method="POST"
+              action="{{ url_for('user_section', user_id=user["_id"]|string()) }}">
+            {{ edit_form.csrf_token }}
+            <tbody>
+            <tr>
+                <td>{{ edit_form.fname.label }}</td>
+                <td>{{ edit_form.fname(class="form-control", value=user["fname"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.lname.label }}</td>
+                <td>{{ edit_form.lname(class="form-control", value=user["lname"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.birthnum.label }}</td>
+                <td>{{ edit_form.birthnum(class="form-control", value=user["birthnum"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.email.label }}</td>
+                <td>{{ edit_form.email(class="form-control", value=user["email"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.street.label }}</td>
+                <td>{{ edit_form.street(class="form-control", value=user["street"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.city.label }}</td>
+                <td>{{ edit_form.city(class="form-control", value=user["city"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.zip.label }}</td>
+                <td>{{ edit_form.zip(class="form-control", value=user["zip"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.username.label }}</td>
+                <td>{{ edit_form.username(class="form-control", value=user["username"]) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">{{ edit_form.submit(class="btn btn-primary btn-lg btn-block") }}</td>
+            </tr>
 
-        <div class="container">
-
-{#            <button type="button" class="btn btn-secondary btn-lg" role="button" aria-pressed="true">#}
-            <a href="{{ url_for('library_catalog') }}" class="btn btn-success btn-lg"
-               role="button" >Katalog knih</a>
-{#            </button>#}
-            <button type="button" class="btn btn-danger btn-lg" role="button" aria-pressed="true">Vrátit knihu
-            </button>
-
-        </div>
-
-        {# ================================= Admin Functions ======================================================= #}
-
-    {% elif current_user.role == "Admin" %}
-        <div class="container">
-
-
-            <button type="button" class="btn btn-secondary btn-lg" data-toggle="modal" role="button"
-                    aria-pressed="true" data-target="#add_book_modal">Přidat knihu
-            </button>
-            <button type="button" class="btn btn-danger btn-lg" role="button" aria-pressed="true"
-                    data-target="#verify_user_modal">Ověřit uživatele
-            </button>
-            <button type="button" class="btn btn-success btn-lg" role="button" aria-pressed="true">Vytvořit uživatele
-            </button>
-
-            {# ================================= Modal for adding books ========================================= #}
-
-{#            <div class="modal fade" id="add_book_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"#}
-{#                 aria-hidden="true">#}
-{#                <div class="modal-dialog" role="document">#}
-{#                    <div class="modal-content">#}
-{#                        <div class="modal-header">#}
-{#                            <h3 class="modal-title" id="exampleModalLabel">Zadejte informace o knize</h3>#}
-{#                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
-{#                                <span aria-hidden="true">&times;</span>#}
-{#                            </button>#}
-{#                        </div>#}
-{#                        <div class="modal-body">#}
-{#                            <form class="form-signin" method="POST"#}
-{#                                  action="{{ url_for('user_section') }}">#}
-{#                                {{ book_form.csrf_token }}#}
-{#                                <div class="form-group">#}
-{#                                    {{ book_form.title.label }}#}
-{#                                    {{ book_form.title(class="form-control", placeholder="Název knihy") }}#}
-{#                                    {{ book_form.author.label }}#}
-{#                                    {{ book_form.author(class="form-control", placeholder="Jméno autora") }}#}
-{#                                    {{ book_form.release_year.label }}#}
-{#                                    {{ book_form.release_year(class="form-control", placeholder="Rok vydání") }}#}
-{#                                    {{ book_form.num_pages.label }}#}
-{#                                    {{ book_form.num_pages(class="form-control", placeholder="Počet stran") }}#}
-{#                                    {{ book_form.num_pcs.label }}#}
-{#                                    {{ book_form.num_pcs(class="form-control", placeholder="Počet výtisků v knihovně") }}#}
-{#                                    {{ book_form.picture.label }}#}
-{#                                    {{ book_form.picture(class="form-control", placeholder="Obrázek titulní strany") }}#}
-{#                                    {{ book_form.available.label }}#}
-{#                                    {{ book_form.available(class="form-chceck-input",type="checkbox", placeholder="Umožnit zapůjčení") }}#}
-{#                                </div>#}
-{#                        </div>#}
-{#                        <div class="modal-footer">#}
-{#                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>#}
-{#                            {{ book_form.submit(class="btn btn-primary") }}#}
-{#                            </form>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-            {# ======================================================================================================#}
-
-            {# ================================= Modal for veryfing users ===========================================#}
-
-
-{#            <div class="modal fade" id="verify_user_modal" tabindex="-1" role="dialog"#}
-{#                 aria-labelledby="exampleModalLabel"#}
-{#                 aria-hidden="true">#}
-{#                <div class="modal-dialog" role="document">#}
-{#                    <div class="modal-content">#}
-{#                        <div class="modal-header">#}
-{#                            <h3 class="modal-title" id="exampleModalLabel">Vyberte uživatele, kterého chcete ověřit</h3>#}
-{#                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
-{#                                <span aria-hidden="true">&times;</span>#}
-{#                            </button>#}
-{#                        </div>#}
-{#                        <div class="modal-body">#}
-{#                            <form class="form-signin" method="POST"#}
-{#                                  action="{{ url_for('user_section') }}">#}
-{#                                {{ book_form.csrf_token }}#}
-{#                                <div class="form-group">#}
-{##}
-{##}
-{##}
-{#                                </div>#}
-{#                        </div>#}
-{#                        <div class="modal-footer">#}
-{#                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>#}
-{#                            {{ book_form.submit(class="btn btn-primary") }}#}
-{#                            </form>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-
-
-    {% endif %}
+            </tbody>
+        </form>
+    </table>
 
 
 

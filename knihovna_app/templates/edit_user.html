@@ -84,7 +84,7 @@
                 <td>{{ book["author"] }}</td>
                 <td>{{ book["num_pages"] }}</td>
                 <td>{{ book["release_year"] }}</td>
-                <td><a href="{{ url_for('give_back', book_id = book["_id"]|string(), username=user["username"]) }}">Odebrat</a></td>
+                <td><a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Odebrat</a></td>
             </tr>
         {% endfor %}
         </tbody>

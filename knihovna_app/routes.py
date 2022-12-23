@@ -76,8 +76,28 @@ def register():
 @app.route('/user', methods=['GET', 'POST'])
 @login_required
 def user_section():
-    # function for viewing history of account and editing user information
-    return render_template("user_section.html")
+    user_id = db.users.find_one({"username": current_user.username})["_id"]
+    edit_form = EditUser(csrf=False)
+    if request.method == 'POST':
+        try:
+            db.users.update_one({"_id": ObjectId(user_id)},
+                                {"$set": {"fname": edit_form.fname.data,
+                                          "lname": edit_form.lname.data,
+                                          "birthnum": edit_form.birthnum.data,
+                                          "email": edit_form.email.data,
+                                          "street": edit_form.street.data,
+                                          "city": edit_form.city.data,
+                                          "zip": edit_form.zip.data,
+                                          "username": edit_form.username.data,
+                                          "activated": edit_form.activated.data}})
+            flash("Úspěšně upraveno", "success")
+            return redirect(url_for("logout"))
+        except:
+            flash("Nepodařilo se upravit", "warning")
+            return redirect(url_for("user_section"))
+
+    user = db.users.find_one({"_id": ObjectId(user_id)})
+    return render_template("user_section.html", user=user, edit_form=edit_form)
 
 
 @app.route('/library_catalog', methods=['GET', 'POST'])
@@ -185,35 +205,18 @@ def borrow(book_id, username):
         abort(403)
 
     user = db.users.find_one({"username": username})
+    user = make_user_object(user)
+    user.borrow_book(book_id)
 
-    if any(book_id in book["borrowed_book_id"] for book in user["borrowed_books"]):
-        flash("Knihu již máte zapůjčenou.", 'danger')
-    elif len(user["borrowed_books"]) > 5:
-        flash("Již máte zapůjčený maximální počet knih.", "danger")
-    else:
-        db.users.update_one(
-            {"username": username},
-            {"$push": {"borrowed_books": {"borrowed_book_id": book_id, "time_stamp": datetime.today()}}}
-        )
-        db.books.update_one(
-            {"_id": ObjectId(book_id)},
-            {"$push": {"borrowed_by": {"user_id": user['_id'], "until": datetime.today() + timedelta(days=6)}}}
-        )
-        db.books.update_one(
-            {"_id": ObjectId(book_id)},
-            {"$inc": {"num_pcs": -1}}
-        )
-
-        flash("Kniha úspěšně zapůjčena.", 'success')
     if current_user.username != username:
         return redirect(url_for("edit_user", user_id=str(user["_id"])))
     else:
         return redirect(url_for('library_catalog'))
 
 
-@app.route('/library_catalog/give_back/<book_id>/<username>', methods=['GET', 'POST'])
+@app.route('/library_catalog/return_book/<book_id>/<username>', methods=['GET', 'POST'])
 @login_required
-def give_back(book_id, username):
+def return_book(book_id, username):
     if current_user.username != username and current_user.role != "Admin":
         abort(403)
     try:

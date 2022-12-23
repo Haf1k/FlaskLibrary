@@ -1,5 +1,10 @@
 # This file contains the models used in the database. It defines the tables and columns used in the database.
+from bson import ObjectId
 from flask_login import UserMixin
+from flask import flash
+from datetime import datetime, timedelta
+
+from knihovna_app.config import db
 
 
 class User(UserMixin):
@@ -21,6 +26,7 @@ class User(UserMixin):
         self.activated = activated
         self._id = _id
 
+    # UserMixin methods
     @staticmethod
     def is_authenticated():
         return True
@@ -37,9 +43,27 @@ class User(UserMixin):
         return self.username
 
     # Basic users methods
-    def borrow_book(self, book):
-        self.borrowed_books.append(book)
+    def borrow_book(self, book_id):
 
+        if any(book_id in book["borrowed_book_id"] for book in self.borrowed_books):
+            flash("Knihu již máte zapůjčenou.", 'danger')
+        elif len(self.borrowed_books) > 5:
+            flash("Již máte zapůjčený maximální počet knih.", "danger")
+        else:
+            db.users.update_one(
+                {"username": self.username},
+                {"$push": {"borrowed_books": {"borrowed_book_id": book_id, "time_stamp": datetime.today()}}}
+            )
+            db.books.update_one(
+                {"_id": ObjectId(book_id)},
+                {"$push": {"borrowed_by": {"user_id": self._id, "until": datetime.today() + timedelta(days=6)}}}
+            )
+            db.books.update_one(
+                {"_id": ObjectId(book_id)},
+                {"$inc": {"num_pcs": -1}}
+            )
+
+            flash("Kniha úspěšně zapůjčena.", 'success')
     def return_book(self, book):
         self.borrowed_books.remove(book)
 
@@ -62,14 +86,13 @@ class User(UserMixin):
 
 
 class Book:
-    def __init__(self, title, author, release_year, num_pages, num_pcs, picture=None, available=True):
+    def __init__(self, title, author, release_year, num_pages, num_pcs, picture=None):
         self.title = title
         self.author = author
         self.release_year = release_year
         self.num_pages = num_pages
         self.num_pcs = num_pcs
         self.picture = picture
-        self.available = available
         self.borrowed_by = []
 
     def borrow(self, user):
