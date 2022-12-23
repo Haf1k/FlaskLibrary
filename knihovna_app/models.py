@@ -1,10 +1,11 @@
 # This file contains the models used in the database. It defines the tables and columns used in the database.
 from bson import ObjectId
 from flask_login import UserMixin
-from flask import flash
+from flask import flash, request
 from datetime import datetime, timedelta
 
 from knihovna_app.config import db
+from knihovna_app.forms import EditUser
 
 
 class User(UserMixin):
@@ -42,6 +43,9 @@ class User(UserMixin):
     def get_id(self):
         return self.username
 
+    def get_string_id(self):
+        return str(self._id)
+
     # Basic users methods
     def borrow_book(self, book_id):
 
@@ -64,8 +68,18 @@ class User(UserMixin):
             )
 
             flash("Kniha úspěšně zapůjčena.", 'success')
-    def return_book(self, book):
-        self.borrowed_books.remove(book)
+    def return_book(self, book_id):
+        try:
+            db.users.update_one({"username": self.username},
+                                {"$pull": {"borrowed_books": {"borrowed_book_id": book_id}}})
+            db.books.update_one({"_id": ObjectId(book_id)},
+                                {"$pull": {
+                                    "borrowed_by": {"user_id": db.users.find_one({"username": self.username})["_id"]}}})
+            db.books.update_one({"_id": ObjectId(book_id)},
+                                {"$inc": {"num_pcs": 1}})
+            flash("Kniha úspěšně vrácena.", 'success')
+        except:
+            flash("Kniha nemohla být vrácena", "warning")
 
     # Admin methods
     def delete_book(self, book):
@@ -83,6 +97,9 @@ class User(UserMixin):
     def set_role(self):
         if self.username == "admin":
             self.role = 'Admin'
+
+    def edit_user(self):
+        pass
 
 
 class Book:

@@ -204,12 +204,11 @@ def borrow(book_id, username):
     if current_user.username != username and current_user.role != "Admin":
         abort(403)
 
-    user = db.users.find_one({"username": username})
-    user = make_user_object(user)
+    user = make_user_object(db.users.find_one({"username": username}))
     user.borrow_book(book_id)
 
     if current_user.username != username:
-        return redirect(url_for("edit_user", user_id=str(user["_id"])))
+        return redirect(url_for("edit_user", user_id=user.get_string_id()))
     else:
         return redirect(url_for('library_catalog'))
 
@@ -219,17 +218,9 @@ def borrow(book_id, username):
 def return_book(book_id, username):
     if current_user.username != username and current_user.role != "Admin":
         abort(403)
-    try:
-        db.users.update_one({"username": username},
-                            {"$pull": {"borrowed_books": {"borrowed_book_id": book_id}}})
-        db.books.update_one({"_id": ObjectId(book_id)},
-                            {"$pull": {
-                                "borrowed_by": {"user_id": db.users.find_one({"username": username})["_id"]}}})
-        db.books.update_one({"_id": ObjectId(book_id)},
-                            {"$inc": {"num_pcs": 1}})
-        flash("Kniha úspěšně vrácena.", 'success')
-    except:
-        flash("Kniha nemohla být vrácena", "warning")
+
+    user = make_user_object(db.users.find_one({"username": username}))
+    user.return_book(book_id)
 
     if current_user.username != username:
         return redirect(url_for("edit_user", user_id=str(db.users.find_one({"username": username})["_id"])))
