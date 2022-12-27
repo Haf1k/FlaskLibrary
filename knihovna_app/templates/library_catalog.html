@@ -20,9 +20,9 @@
             <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" role="button" aria-pressed="true"
                     data-target="#verify_user_modal">Ověřit uživatele
             </button>
-            <a href="register" class="btn btn-success btn-lg" role="button">Vytvořit uživatele</a>
+            <a href="{{ url_for("register") }}" class="btn btn-success btn-lg" role="button">Vytvořit uživatele</a>
             </button>
-            <a href="users_catalog" class="btn btn-warning btn-lg" role="button">Databáze uživatelů</a>
+            <a href="{{ url_for("users_catalog", search_value="None", sort_value="default", type="asc") }}" class="btn btn-warning btn-lg" role="button">Databáze uživatelů</a>
 
             {# ================================= Modal for adding books ========================================= #}
 
@@ -39,7 +39,7 @@
                         </div>
                         <div class="modal-body">
                             <form class="form-signin" method="POST"
-                                  action="{{ url_for('library_catalog') }}">
+                                  action="{{ url_for('library_catalog', sort_value = "default", type="type", search_value="None") }}">
                                 {{ book_form.csrf_token }}
                                 <div class="form-group">
                                     {{ book_form.title.label }}
@@ -155,7 +155,8 @@
                     <td>{{ book["author"] }}</td>
                     <td>{{ book["num_pages"] }}</td>
                     <td>{{ book["release_year"] }}</td>
-                    <td><a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Vrátit</a>
+                    <td>
+                        <a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Vrátit</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -166,18 +167,33 @@
 
 
     <h3>Databáze knih</h3>
+
+    <form class="form-inline" method="POST"
+          action="{{ url_for('library_catalog', sort_value = sort_value, type=type, search_value=search_value) }}">
+        {{ search_form.csrf_token }}
+        {{ search_form.search_data(class="form-control mr-sm-2", placeholder="Zadejte hledaný výraz") }}
+        {{ search_form.submit(class="btn btn-outline-success my-2 my-sm-0") }}
+    </form>
     <table class="table table-striped">
         <thead>
         <tr>
             <th scope="col">#</th>
             <th scope="col">Obrázek</th>
-            <th scope="col">Název knihy</th>
-            <th scope="col">Autor</th>
+            <th scope="col">Název knihy
+                <a href="{{ url_for('library_catalog', sort_value = "title", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('library_catalog', sort_value = "title", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
+            <th scope="col">Autor
+                <a href="{{ url_for('library_catalog', sort_value = "author", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('library_catalog', sort_value = "author", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
             <th scope="col">Počet stran</th>
-            <th scope="col">Rok vydání</th>
+            <th scope="col">Rok vydání
+                <a href="{{ url_for('library_catalog', sort_value = "release_year", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('library_catalog', sort_value = "release_year", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
             <th scope="col">Počet volných kusů</th>
             <th scope="col"></th>
-
         </tr>
         </thead>
         <tbody>

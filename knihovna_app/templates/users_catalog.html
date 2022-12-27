@@ -9,16 +9,39 @@
 {% block content %}
 
     <h3>Seznam uživatelů</h3>
+    <form class="form-inline" method="POST"
+          action="{{ url_for('users_catalog', sort_value = sort_value, type=type, search_value=search_value) }}">
+        {{ search_form.csrf_token }}
+        {{ search_form.search_data(class="form-control mr-sm-2", placeholder="Zadejte hledaný výraz") }}
+        {{ search_form.submit(class="btn btn-outline-success my-2 my-sm-0") }}
+    </form>
     <table class="table table-striped">
         <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">Jméno</th>
-            <th scope="col">Přijmení</th>
+            <th scope="col">Jméno
+                <a href="{{ url_for('users_catalog', sort_value = "fname", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('users_catalog', sort_value = "fname", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
+            <th scope="col">Přijmení
+                <a href="{{ url_for('users_catalog', sort_value = "lname", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('users_catalog', sort_value = "lname", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
             <th scope="col">E-mail</th>
+            <th scope="col">Rodné číslo
+                <a href="{{ url_for('users_catalog', sort_value = "birthnum", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('users_catalog', sort_value = "birthnum", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
+
             <th scope="col">Uživatelské jméno</th>
-            <th scope="col">Město</th>
-            <th scope="col">Ulice</th>
+            <th scope="col">Město
+                <a href="{{ url_for('users_catalog', sort_value = "city", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('users_catalog', sort_value = "city", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
+            <th scope="col">Ulice
+                <a href="{{ url_for('users_catalog', sort_value = "street", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('users_catalog', sort_value = "street", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
             <th scope="col"></th>
 
         </tr>
@@ -30,6 +53,7 @@
                 <td>{{ user["fname"] }}</td>
                 <td>{{ user["lname"] }}</td>
                 <td>{{ user["email"] }}</td>
+                <td>{{ user["birthnum"] }}</td>
                 <td>{{ user["username"] }}</td>
                 <td>{{ user["city"] }}</td>
                 <td>{{ user["street"] }}</td>

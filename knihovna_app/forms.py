@@ -1,19 +1,18 @@
 from datetime import date
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, FileField, BooleanField, DateField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length, NumberRange
-from models import User
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, FileField, BooleanField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange
 
 
 class RegistrationForm(FlaskForm):
     fname = StringField('Jméno', validators=[DataRequired(), Length(max=30)])
     lname = StringField('Příjmení', validators=[DataRequired(), Length(max=30)])
-    birthnum = IntegerField('Rodné dasdasdčislo bez /', validators=[DataRequired(), Length(min=8, max=10)])
+    birthnum = IntegerField('Rodné čislo bez /', validators=[DataRequired()])
     email = StringField('E-mail', validators=[DataRequired(), Email(message="Zadejte platný email."), Length(max=30)])
     street = StringField('Ulice', validators=[DataRequired(), Length(max=30)])
     city = StringField('Město', validators=[DataRequired(), Length(max=30)])
-    zip = IntegerField('PSČ', validators=[DataRequired(), Length(max=30)])
+    zip = IntegerField('PSČ', validators=[DataRequired()])
     username = StringField('Uživatelské jméno', validators=[DataRequired(), Length(max=30)])
     password = PasswordField('Heslo', validators=[DataRequired()])
     password2 = PasswordField('Zopakujte heslo',
@@ -31,7 +30,7 @@ class EditUser(FlaskForm):
     zip = IntegerField('PSČ', validators=[DataRequired(), Length(max=30)])
     username = StringField('Uživatelské jméno', validators=[DataRequired(), Length(max=30)])
     activated = BooleanField('Aktivace účtu')
-    role = StringField('Role v knihovně')
+    role = StringField('Role v knihovně', default='user')
     submit = SubmitField('Uložit')
 
 
@@ -55,3 +54,8 @@ class CreateBookForm(FlaskForm):
                                        NumberRange(min=0, max=9999, message="Zadejte platný počet výtisků")])
     picture = FileField("Obrázek titulní strany")
     submit = SubmitField('Uložit')
+
+
+class SearchForm(FlaskForm):
+    search_data = StringField("Hledat")
+    submit = SubmitField('Hledat')

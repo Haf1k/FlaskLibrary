@@ -27,10 +27,12 @@
         {% if current_user.is_authenticated %}
             <ul class="nav navbar-nav">
                 <li class="{{ 'active' if active_page == 'library_catalog' else '' }}">
-                    <a href={{ url_for('library_catalog') }}>Katalog knih</a></li>
+                    <a href={{ url_for('library_catalog', sort_value = "default", type="asc", search_value="None") }}>Katalog
+                        knih</a></li>
                 {% if current_user.role == "Admin" %}
                     <li class="{{ 'active' if active_page == 'users_catalog' else '' }}">
-                        <a href={{ url_for('users_catalog') }}>Seznam uživatelů</a></li>
+                        <a href={{ url_for('users_catalog', sort_value = "default", type="asc", search_value="None") }}>Seznam
+                            uživatelů</a></li>
                 {% else %}
                     <li class="{{ 'active' if active_page == 'user_section' else '' }}">
                         <a href={{ url_for('user_section') }}>Účet</a></li>

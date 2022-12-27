@@ -1,11 +1,10 @@
 # This file contains the models used in the database. It defines the tables and columns used in the database.
 from bson import ObjectId
 from flask_login import UserMixin
-from flask import flash, request
+from flask import flash
 from datetime import datetime, timedelta
 
 from knihovna_app.config import db
-from knihovna_app.forms import EditUser
 
 
 class User(UserMixin):
@@ -68,6 +67,7 @@ class User(UserMixin):
             )
 
             flash("Kniha úspěšně zapůjčena.", 'success')
+
     def return_book(self, book_id):
         try:
             db.users.update_one({"username": self.username},
@@ -78,42 +78,55 @@ class User(UserMixin):
             db.books.update_one({"_id": ObjectId(book_id)},
                                 {"$inc": {"num_pcs": 1}})
             flash("Kniha úspěšně vrácena.", 'success')
-        except:
+        except Exception:
             flash("Kniha nemohla být vrácena", "warning")
 
     # Admin methods
-    def delete_book(self, book):
-        if self.role == 'Admin':
-            Book.delete_book()
 
-    def add_book(self, book):
-        if self.role == 'Admin':
-            Book.add_book()
+    def delete_user(self):
+        if db.users.find_one({"_id": ObjectId(self._id)})["borrowed_books"]:
+            flash("Uživatel nemůže být smazán, jelikož má stále zapůjčené knihy.", 'danger')
+        else:
+            db.users.delete_one({"_id": ObjectId(self._id)})
+            flash("Uživatel byl úspěšně smazán", "success")
 
-    def activate_user(self, user):
-        if self.role == 'Admin':
-            user.activated = True
-
-    def set_role(self):
-        if self.username == "admin":
-            self.role = 'Admin'
-
-    def edit_user(self):
-        pass
+    def update(self, edit_form):
+        db.users.update_one({"_id": self._id},
+                            {"$set": {"fname": edit_form.fname.data,
+                                      "lname": edit_form.lname.data,
+                                      "birthnum": edit_form.birthnum.data,
+                                      "email": edit_form.email.data,
+                                      "street": edit_form.street.data,
+                                      "city": edit_form.city.data,
+                                      "zip": edit_form.zip.data,
+                                      "username": edit_form.username.data,
+                                      "activated": edit_form.activated.data,
+                                      "role": edit_form.role.data}})
 
 
 class Book:
-    def __init__(self, title, author, release_year, num_pages, num_pcs, picture=None):
+    def __init__(self, title, author, release_year, num_pages, num_pcs, borrowed_by=[], picture=None, _id=None):
         self.title = title
         self.author = author
         self.release_year = release_year
         self.num_pages = num_pages
         self.num_pcs = num_pcs
         self.picture = picture
-        self.borrowed_by = []
+        self.borrowed_by = borrowed_by
+        self._id = _id
 
     def borrow(self, user):
         return
+
+    def update_book(self, edit_book_form):
+        db.books.update_one({"_id": ObjectId(self._id)},
+                            {"$set": {"title": edit_book_form.title.data,
+                                      "author": edit_book_form.author.data,
+                                      "release_year": str(edit_book_form.release_year.data),
+                                      "num_pages": edit_book_form.num_pages.data,
+                                      "num_pcs": edit_book_form.num_pcs.data,
+                                      "picture": edit_book_form.picture.data
+                                      }})
 
     def return_book(self):
         return
@@ -122,4 +135,9 @@ class Book:
         return
 
     def delete_book(self):
+        if db.books.find_one({"_id": ObjectId(self._id)})["borrowed_by"]:
+            flash("Knihu nelze smazat, jelikož ji má někdo půjčenou.", 'danger')
+        else:
+            db.books.delete_one({"_id": ObjectId(self._id)})
+            flash("Kniha byla úspěšně smazána", "success")
         return

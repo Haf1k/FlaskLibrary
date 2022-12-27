@@ -84,12 +84,14 @@
                 <td>{{ book["author"] }}</td>
                 <td>{{ book["num_pages"] }}</td>
                 <td>{{ book["release_year"] }}</td>
-                <td><a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Odebrat</a></td>
+                <td><a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Odebrat</a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-<a href="{{ url_for("give_user_book", user_id=user["_id"]|string()) }}" class="btn btn-primary btn-lg btn-block" role="button">Přiřadit uživateli knihu</a>
+    <a href="{{ url_for("give_user_book", user_id=user["_id"]|string(), sort_value = "default", type="asc", search_value="None") }}" class="btn btn-primary btn-lg btn-block"
+       role="button">Přiřadit uživateli knihu</a>
 
 {% endblock %}
