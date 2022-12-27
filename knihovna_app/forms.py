@@ -1,15 +1,15 @@
 from datetime import date
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, FileField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, FileField, BooleanField, EmailField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, NumberRange
 
 
 class RegistrationForm(FlaskForm):
     fname = StringField('Jméno', validators=[DataRequired(), Length(max=30)])
     lname = StringField('Příjmení', validators=[DataRequired(), Length(max=30)])
-    birthnum = IntegerField('Rodné čislo bez /', validators=[DataRequired()])
-    email = StringField('E-mail', validators=[DataRequired(), Email(message="Zadejte platný email."), Length(max=30)])
+    birthnum = IntegerField('Rodné čislo bez /', validators=[DataRequired(), NumberRange(min=1000000, max=9999999999)])
+    email = EmailField('E-mail', validators=[DataRequired(), Email(message="Zadejte platný email."), Length(max=30)])
     street = StringField('Ulice', validators=[DataRequired(), Length(max=30)])
     city = StringField('Město', validators=[DataRequired(), Length(max=30)])
     zip = IntegerField('PSČ', validators=[DataRequired()])
@@ -23,8 +23,8 @@ class RegistrationForm(FlaskForm):
 class EditUser(FlaskForm):
     fname = StringField('Jméno', validators=[DataRequired(), Length(max=30)])
     lname = StringField('Příjmení', validators=[DataRequired(), Length(max=30)])
-    birthnum = IntegerField('Rodné čislo bez /', validators=[DataRequired(), Length(min=8, max=10)])
-    email = StringField('E-mail', validators=[DataRequired(), Email(message="Zadejte platný email."), Length(max=30)])
+    birthnum = IntegerField('Rodné čislo bez /', validators=[DataRequired(), NumberRange(min=1000000, max=9999999999)])
+    email = EmailField('E-mail', validators=[DataRequired(), Email(message="Zadejte platný email."), Length(max=30)])
     street = StringField('Ulice', validators=[DataRequired(), Length(max=30)])
     city = StringField('Město', validators=[DataRequired(), Length(max=30)])
     zip = IntegerField('PSČ', validators=[DataRequired(), Length(max=30)])
@@ -57,5 +57,5 @@ class CreateBookForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    search_data = StringField("Hledat")
+    search_data = StringField("Hledat", validators=[Length(min=3)])
     submit = SubmitField('Hledat')

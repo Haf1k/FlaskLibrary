@@ -58,6 +58,7 @@ def register():
         except:
             flash("Uživatel s tímto uživatelským jménem nebo e-mailem již existuje", "danger")
             return render_template('register.html', form=form)
+    flash("Oveřte zadané údaje", "danger")
     return render_template('register.html', form=form)
 
 
@@ -239,7 +240,7 @@ def delete_book(book_id):
     book = make_book_object(db.books.find_one({"_id": ObjectId(book_id)}))
     book.delete_book()
 
-    return redirect(url_for("library_catalog"))
+    return redirect(url_for("library_catalog", sort_value="default", type="asc", search_value="None"))
 
 
 @app.route('/users_catalog/delete/<user_id>', methods=['GET', 'POST'])
@@ -251,7 +252,7 @@ def delete_user(user_id):
     user = make_user_object(db.users.find_one({"_id": ObjectId(user_id)}))
     user.delete_user()
 
-    return redirect(url_for("users_catalog"))
+    return redirect(url_for("users_catalog", sort_value="default", type="asc", search_value="None"))
 
 
 @app.route('/about')
