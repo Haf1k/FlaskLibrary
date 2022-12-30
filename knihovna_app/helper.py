@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from bson import ObjectId
 
 from knihovna_app.config import db
@@ -120,3 +122,34 @@ def users_listing(search_data=None, sort_value="author", type=1):
         ])
     else:
         return db.users.find({"role": "user"}).sort(sort_value, type)
+
+
+def library_history():
+    output = []
+    logs = db.auditLog.find()
+
+    for log in logs:
+        book = db.books.find_one({"_id": log["book_id"]})
+        user = db.users.find_one({"_id": log["user_id"]})
+
+        match log["type_of_transaction"]:
+            case "borrow":
+                transaction = "Zapůjčení"
+            case "return":
+                transaction = "Navrácení"
+            case "automatic return":
+                transaction = "Vypršení lhůty zapůjčení"
+            case _:
+                return
+
+        value = {"fname": user["fname"],
+                 "lname": user["lname"],
+                 "username": user["username"],
+                 "title": book["title"],
+                 "author": book["author"],
+                 "release_year": book["release_year"],
+                 "transaction": transaction,
+                 "date": datetime.fromisoformat(log["timestamp"].replace("Z", ''))}
+        output.append(value)
+
+    return output[::-1]

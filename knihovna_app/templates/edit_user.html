@@ -94,4 +94,31 @@
     <a href="{{ url_for("give_user_book", user_id=user["_id"]|string(), sort_value = "default", type="asc", search_value="None") }}" class="btn btn-primary btn-lg btn-block"
        role="button">Přiřadit uživateli knihu</a>
 
+    <h3>Historie výpůjček</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Název knihy</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Rok vydání</th>
+            <th scope="col">Typ transakce</th>
+            <th scope="col">Datum transakce</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for log in user_history %}
+            <tr>
+                <th scope="row">{{ loop.index0 }}</th>
+                <td>{{ log["title"] }}</td>
+                <td>{{ log["author"] }}</td>
+                <td>{{ log["release_year"] }}</td>
+                <td>{{ log["transaction"] }}</td>
+                <td>{{ log["date"] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 {% endblock %}

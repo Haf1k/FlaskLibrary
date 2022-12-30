@@ -33,6 +33,8 @@
                     <li class="{{ 'active' if active_page == 'users_catalog' else '' }}">
                         <a href={{ url_for('users_catalog', sort_value = "default", type="asc", search_value="None") }}>Seznam
                             uživatelů</a></li>
+                    <li class="{{ 'active' if active_page == 'transactions_history' else '' }}">
+                        <a href={{ url_for('transactions_history') }}>Historie transakcí</a></li>
                 {% else %}
                     <li class="{{ 'active' if active_page == 'user_section' else '' }}">
                         <a href={{ url_for('user_section') }}>Účet</a></li>

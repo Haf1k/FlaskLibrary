@@ -6,7 +6,7 @@ from flask_login import login_user, current_user, login_required, logout_user
 from config import db
 from forms import RegistrationForm, LoginForm, CreateBookForm, EditUser, SearchForm
 from helper import make_user_object, books_listing, books_borrowed_by_user, users_with_borrowed_book, users_listing, \
-    make_book_object, create_book, create_user
+    make_book_object, create_book, create_user, library_history
 from run import app, login_manager
 
 
@@ -76,8 +76,10 @@ def user_section():
             flash("Nepodařilo se upravit", "warning")
             return redirect(url_for("user_section"))
 
+    user_history = user.user_history()
     user = db.users.find_one({"_id": ObjectId(user.get_string_id())})
-    return render_template("user_section.html", user=user, edit_form=edit_form)
+
+    return render_template("user_section.html", user=user, edit_form=edit_form, user_history=user_history)
 
 
 @app.route('/library_catalog/<sort_value>/<type>/<search_value>', methods=['GET', 'POST'])
@@ -124,6 +126,7 @@ def users_catalog(sort_value, type, search_value):
         search_value = search_form.search_data.data
         if not search_value:
             search_value = "None"
+            print("test")
     users = users_listing(search_value, sort_value, type)
 
     return render_template("users_catalog.html", users=users, search_form=search_form, search_value=search_value,
@@ -146,8 +149,11 @@ def edit_user(user_id):
 
     borrowed_books = books_borrowed_by_user(user_id=user_id)
 
-    user = db.users.find_one({"_id": ObjectId(user_id)})
-    return render_template("edit_user.html", user=user, edit_form=edit_form, borrowed_books=borrowed_books)
+    user = make_user_object(db.users.find_one({"_id": ObjectId(user_id)}))
+    user_history = user.user_history()
+    user = vars(user)
+    return render_template("edit_user.html", user=user, edit_form=edit_form, borrowed_books=borrowed_books,
+                           user_history=user_history)
 
 
 @app.route('/users_catalog/edit_user/give_user_book/<user_id>/<sort_value>/<type>/<search_value>',
@@ -220,6 +226,14 @@ def return_book(book_id, username):
     else:
         return redirect(url_for('library_catalog', sort_value="default", type="asc", search_value="None"))
 
+@app.route('/users_catalog/history', methods=['GET', 'POST'])
+@login_required
+def transactions_history():
+    if current_user.role != "Admin":
+        abort(403)
+    all_users_history = library_history()
+
+    return render_template("history.html", all_users_history=all_users_history)
 
 @app.route('/library_catalog/verify/<user_id>', methods=['GET', 'POST'])
 @login_required

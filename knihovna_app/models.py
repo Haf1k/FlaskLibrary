@@ -1,8 +1,9 @@
 # This file contains the models used in the database. It defines the tables and columns used in the database.
-from bson import ObjectId
-from flask_login import UserMixin
-from flask import flash
 from datetime import datetime, timedelta
+
+from bson import ObjectId
+from flask import flash
+from flask_login import UserMixin
 
 from knihovna_app.config import db
 
@@ -48,35 +49,50 @@ class User(UserMixin):
     # Basic users methods
     def borrow_book(self, book_id):
 
-        if any(book_id in book["borrowed_book_id"] for book in self.borrowed_books):
+        time_of_return = (datetime.today() + timedelta(days=6)).isoformat()
+
+        if any(book_id in str(book["borrowed_book_id"]) for book in self.borrowed_books):
             flash("Knihu již máte zapůjčenou.", 'danger')
         elif len(self.borrowed_books) > 5:
             flash("Již máte zapůjčený maximální počet knih.", "danger")
         else:
             db.users.update_one(
                 {"username": self.username},
-                {"$push": {"borrowed_books": {"borrowed_book_id": book_id, "time_stamp": datetime.today()}}}
+                {"$push": {"borrowed_books": {"borrowed_book_id": ObjectId(book_id),
+                                              "borrowed_until": time_of_return}}}
             )
             db.books.update_one(
                 {"_id": ObjectId(book_id)},
-                {"$push": {"borrowed_by": {"user_id": self._id, "until": datetime.today() + timedelta(days=6)}}}
+                {"$push": {"borrowed_by": {"user_id": self._id, "borrowed_until": time_of_return}}}
             )
             db.books.update_one(
                 {"_id": ObjectId(book_id)},
                 {"$inc": {"num_pcs": -1}}
             )
 
+            db.auditLog.insert_one({"user_id": self._id,
+                                    "book_id": ObjectId(book_id),
+                                    "type_of_transaction": "borrow",
+                                    "timestamp": datetime.today().isoformat()
+                                    })
+
             flash("Kniha úspěšně zapůjčena.", 'success')
 
     def return_book(self, book_id):
         try:
+
             db.users.update_one({"username": self.username},
-                                {"$pull": {"borrowed_books": {"borrowed_book_id": book_id}}})
+                                {"$pull": {"borrowed_books": {"borrowed_book_id": ObjectId(book_id)}}})
             db.books.update_one({"_id": ObjectId(book_id)},
                                 {"$pull": {
                                     "borrowed_by": {"user_id": db.users.find_one({"username": self.username})["_id"]}}})
             db.books.update_one({"_id": ObjectId(book_id)},
                                 {"$inc": {"num_pcs": 1}})
+            db.auditLog.insert_one({"user_id": self._id,
+                                    "book_id": ObjectId(book_id),
+                                    "type_of_transaction": "return",
+                                    "timestamp": datetime.today().isoformat()
+                                    })
             flash("Kniha úspěšně vrácena.", 'success')
         except Exception:
             flash("Kniha nemohla být vrácena", "warning")
@@ -102,6 +118,32 @@ class User(UserMixin):
                                       "username": edit_form.username.data,
                                       "activated": edit_form.activated.data,
                                       "role": edit_form.role.data}})
+
+    def user_history(self):
+
+        output = []
+        logs = db.auditLog.find({"user_id": (self._id)})
+
+        for log in logs:
+            book = db.books.find_one({"_id": log["book_id"]})
+            match log["type_of_transaction"]:
+                case "borrow":
+                    transaction = "Zapůjčení"
+                case "return":
+                    transaction = "Navrácení"
+                case "automatic return":
+                    transaction = "Vypršení lhůty zapůjčení"
+                case _:
+                    return
+
+            value = {"title": book["title"],
+                     "author": book["author"],
+                     "release_year": book["release_year"],
+                     "transaction": transaction,
+                     "date": datetime.fromisoformat(log["timestamp"].replace("Z", ''))}
+            output.append(value)
+
+        return output[::-1]
 
 
 class Book:
