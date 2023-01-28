@@ -167,8 +167,9 @@ class Book:
                                       "release_year": str(edit_book_form.release_year.data),
                                       "num_pages": edit_book_form.num_pages.data,
                                       "num_pcs": edit_book_form.num_pcs.data,
-                                      "picture": edit_book_form.picture.data
+                                      "picture": edit_book_form.picture.data.filename
                                       }})
+
 
     def return_book(self):
         return

@@ -9,7 +9,7 @@
 {% block content %}
 
     <table class="table table-hover">
-        <form class="form-signin" method="POST"
+        <form class="form-signin" method="POST" enctype="multipart/form-data"
               action="{{ url_for('edit_book', book_id=book["_id"]|string()) }}">
             {{ edit_book_form.csrf_token }}
             <tbody>

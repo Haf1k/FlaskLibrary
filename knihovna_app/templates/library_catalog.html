@@ -38,7 +38,7 @@
 
                         </div>
                         <div class="modal-body">
-                            <form class="form-signin" method="POST"
+                            <form class="form-signin" method="POST" enctype="multipart/form-data"
                                   action="{{ url_for('library_catalog', sort_value = "default", type="type", search_value="None") }}">
                                 {{ book_form.csrf_token }}
                                 <div class="form-group">
@@ -150,7 +150,7 @@
             {% for book in borrowed_books %}
                 <tr>
                     <th scope="row">{{ loop.index0 }}</th>
-                    <td>{{ book["picture"] }}</td>
+                    <td><img src="{{ book["picture"] }}"></td>
                     <td>{{ book["title"] }}</td>
                     <td>{{ book["author"] }}</td>
                     <td>{{ book["num_pages"] }}</td>
@@ -174,7 +174,8 @@
         {{ search_form.search_data(class="form-control mr-sm-2", placeholder="Zadejte hledaný výraz") }}
         {{ search_form.submit(class="btn btn-outline-success my-2 my-sm-0") }}
     </form>
-    <table class="table table-striped">
+    <div class="table-responsive">
+    <table class="table table-responsive align-middle">
         <thead>
         <tr>
             <th scope="col">#</th>
@@ -200,7 +201,8 @@
         {% for book in books %}
             <tr>
                 <th scope="row">{{ loop.index0 }}</th>
-                <td>{{ book["picture"] }}</td>
+{#                <td>{{ book["picture"] }}</td>#}
+                <td><img src="/book_picture/{{ book["picture"] }}" height="100"></td>
                 <td>{{ book["title"] }}</td>
                 <td>{{ book["author"] }}</td>
                 <td>{{ book["num_pages"] }}</td>
@@ -222,6 +224,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
 
 

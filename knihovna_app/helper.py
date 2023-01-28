@@ -1,7 +1,8 @@
+import io
 from datetime import datetime
 
+from PIL import Image
 from bson import ObjectId
-
 from knihovna_app.config import db
 from models import User, Book
 
@@ -153,3 +154,17 @@ def library_history():
         output.append(value)
 
     return output[::-1]
+
+
+def send_image_to_db(book_form):
+    if book_form.picture.data is None:
+        return
+    image = Image.open(book_form.picture.data)
+    image_bytes = io.BytesIO()
+    image.save(image_bytes, format='JPEG')
+    image_to_database = {"_id": ObjectId(),
+                         "filename": book_form.picture.data.filename,
+                         "data": image_bytes.getvalue()}
+    db.images.insert_one(image_to_database)
+
+    return

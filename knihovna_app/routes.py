@@ -1,12 +1,17 @@
+import base64
+import io
+
 import bcrypt
+from PIL import Image
 from bson import ObjectId
-from flask import render_template, url_for, request, redirect, abort, flash
+from flask import render_template, url_for, request, redirect, abort, flash, Response, send_file
 from flask_login import login_user, current_user, login_required, logout_user
+from matplotlib import pyplot as plt
 
 from config import db
 from forms import RegistrationForm, LoginForm, CreateBookForm, EditUser, SearchForm
 from helper import make_user_object, books_listing, books_borrowed_by_user, users_with_borrowed_book, users_listing, \
-    make_book_object, create_book, create_user, library_history
+    make_book_object, create_book, create_user, library_history, send_image_to_db
 from run import app, login_manager
 
 
@@ -90,13 +95,15 @@ def library_catalog(sort_value, type, search_value):
     unverified_users = db.users.find({"activated": False})
     if current_user.role == "Admin":
         if book_form.validate_on_submit():
-            try:
-                book = create_book(book_form).__dict__
-                book["_id"] = ObjectId()
-                db.books.insert_one(book)
-                flash("Kniha úspěšně přidána", "success")
-            except Exception:
-                flash("Chyba při přidávání knihy", "danger")
+            # try:
+            book = create_book(book_form).__dict__
+            book["_id"] = ObjectId()
+            send_image_to_db(book_form)
+            book["picture"] = book_form.picture.data.filename
+            db.books.insert_one(book)
+            flash("Kniha úspěšně přidána", "success")
+        # except Exception:
+        #     flash("Chyba při přidávání knihy", "danger")
 
         if len(list(unverified_users.clone())) != 0:
             flash(f"Počet uživatelů k ověření: {len(list(unverified_users.clone()))}", "warning")
@@ -186,6 +193,7 @@ def edit_book(book_id):
         try:
             book = make_book_object(db.books.find_one({"_id": ObjectId(book_id)}))
             book.update_book(edit_book_form)
+            send_image_to_db(edit_book_form)
             flash("Úspěšně upraveno", "success")
         except Exception:
             flash("Nepodařilo se upravit", "warning")
@@ -226,6 +234,7 @@ def return_book(book_id, username):
     else:
         return redirect(url_for('library_catalog', sort_value="default", type="asc", search_value="None"))
 
+
 @app.route('/users_catalog/history', methods=['GET', 'POST'])
 @login_required
 def transactions_history():
@@ -234,6 +243,7 @@ def transactions_history():
     all_users_history = library_history()
 
     return render_template("history.html", all_users_history=all_users_history)
+
 
 @app.route('/library_catalog/verify/<user_id>', methods=['GET', 'POST'])
 @login_required
@@ -267,6 +277,16 @@ def delete_user(user_id):
     user.delete_user()
 
     return redirect(url_for("users_catalog", sort_value="default", type="asc", search_value="None"))
+
+
+@app.route('/book_picture/<filename>')
+def serve_img(filename):
+    if filename is not None:
+
+        # img = db.images.find_one({"filename": filename})["data"]
+        img = io.BytesIO(db.images.find_one({"filename": filename})["data"])
+        # encoded_img = base64.b64encode(img)
+    return send_file(img, mimetype="jpeg")
 
 
 @app.route('/about')
