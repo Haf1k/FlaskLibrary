@@ -1,3 +1,3 @@
 # Project exclude paths
 /venv/
-config.py
+knihovna_app/config.py
