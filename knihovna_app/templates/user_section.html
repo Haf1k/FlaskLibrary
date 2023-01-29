@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Editace uživatele uživatelem
+{% endblock %}
+
+{% set active_page = "user_section" %}
+
+{% block content %}
+
+    <table class="table table-hover">
+        <form class="form-signin" method="POST"
+              action="{{ url_for('user_section', user_id=user["_id"]|string()) }}">
+            {{ edit_form.csrf_token }}
+            <tbody>
+            <tr>
+                <td>{{ edit_form.fname.label }}</td>
+                <td>{{ edit_form.fname(class="form-control", value=user["fname"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.lname.label }}</td>
+                <td>{{ edit_form.lname(class="form-control", value=user["lname"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.birthnum.label }}</td>
+                <td>{{ edit_form.birthnum(class="form-control", value=user["birthnum"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.email.label }}</td>
+                <td>{{ edit_form.email(class="form-control", value=user["email"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.street.label }}</td>
+                <td>{{ edit_form.street(class="form-control", value=user["street"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.city.label }}</td>
+                <td>{{ edit_form.city(class="form-control", value=user["city"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.zip.label }}</td>
+                <td>{{ edit_form.zip(class="form-control", value=user["zip"]) }}</td>
+            </tr>
+            <tr>
+                <td>{{ edit_form.username.label }}</td>
+                <td>{{ edit_form.username(class="form-control", value=user["username"]) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">{{ edit_form.submit(class="btn btn-primary btn-lg btn-block") }}</td>
+            </tr>
+
+            </tbody>
+        </form>
+    </table>
+
+    <h3>Historie výpůjček</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Název knihy</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Rok vydání</th>
+            <th scope="col">Typ transakce</th>
+            <th scope="col">Datum transakce</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for log in user_history %}
+            <tr>
+                <th scope="row">{{ loop.index0 }}</th>
+                <td>{{ log["title"] }}</td>
+                <td>{{ log["author"] }}</td>
+                <td>{{ log["release_year"] }}</td>
+                <td>{{ log["transaction"] }}</td>
+                <td>{{ log["date"] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Historie transakcí
+{% endblock %}
+
+{% set active_page = "transactions_history" %}
+
+{% block content %}
+
+    <h3>Historie výpůjček</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Jméno</th>
+            <th scope="col">Příjmení</th>
+            <th scope="col">Uživatelské jméno</th>
+            <th scope="col">Název knihy</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Rok vydání</th>
+            <th scope="col">Typ transakce</th>
+            <th scope="col">Datum transakce</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for log in all_users_history %}
+            <tr>
+                <th scope="row">{{ loop.index0 }}</th>
+                <td>{{ log["fname"] }}</td>
+                <td>{{ log["lname"] }}</td>
+                <td>{{ log["username"] }}</td>
+                <td>{{ log["title"] }}</td>
+                <td>{{ log["author"] }}</td>
+                <td>{{ log["release_year"] }}</td>
+                <td>{{ log["transaction"] }}</td>
+                <td>{{ log["date"] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -1,0 +1,232 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Katalog knih
+{% endblock %}
+
+{% set active_page = "library_catalog" %}
+
+{% block content %}
+
+    {# ================================= Admin Functions ======================================================= #}
+
+    {% if current_user.role == "Admin" %}
+        <div class="container">
+
+
+            <button type="button" class="btn btn-secondary btn-lg" data-toggle="modal" role="button"
+                    aria-pressed="true" data-target="#add_book_modal">Přidat knihu
+            </button>
+            <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" role="button" aria-pressed="true"
+                    data-target="#verify_user_modal">Ověřit uživatele
+            </button>
+            <a href="{{ url_for("register") }}" class="btn btn-success btn-lg" role="button">Vytvořit uživatele</a>
+            </button>
+            <a href="{{ url_for("users_catalog", search_value="None", sort_value="default", type="asc") }}" class="btn btn-warning btn-lg" role="button">Databáze uživatelů</a>
+
+            {# ================================= Modal for adding books ========================================= #}
+
+            <div class="modal fade" id="add_book_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title" id="exampleModalLabel">Zadejte informace o knize</h3>
+
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-signin" method="POST" enctype="multipart/form-data"
+                                  action="{{ url_for('library_catalog', sort_value = "default", type="type", search_value="None") }}">
+                                {{ book_form.csrf_token }}
+                                <div class="form-group">
+                                    {{ book_form.title.label }}
+                                    {{ book_form.title(class="form-control", placeholder="Název knihy") }}
+                                    {{ book_form.author.label }}
+                                    {{ book_form.author(class="form-control", placeholder="Jméno autora") }}
+                                    {{ book_form.release_year.label }}
+                                    {{ book_form.release_year(class="form-control", placeholder="Rok vydání") }}
+                                    {{ book_form.num_pages.label }}
+                                    {{ book_form.num_pages(class="form-control", placeholder="Počet stran") }}
+                                    {{ book_form.num_pcs.label }}
+                                    {{ book_form.num_pcs(class="form-control", placeholder="Počet výtisků v knihovně") }}
+                                    {{ book_form.picture.label }}
+                                    {{ book_form.picture(class="form-control", placeholder="Obrázek titulní strany") }}
+                                </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+                            {{ book_form.submit(class="btn btn-primary") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# ================================================================================================= #}
+            {# ================================= Modal for verifying users ========================================= #}
+
+            <div class="modal fade" id="verify_user_modal" tabindex="-1" role="dialog"#}
+                 aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title" id="exampleModalLabel">Uživatelé čekající na ověření</h3>
+
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Jméno</th>
+                                        <th scope="col">Přijmení</th>
+                                        <th scope="col">E-mail</th>
+                                        <th scope="col">Uživatelské jméno</th>
+                                        <th scope="col">Město</th>
+                                        <th scope="col">Ulice</th>
+                                        <th scope="col"></th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for user in unverified_users %}
+                                        <tr>
+                                            <th scope="row">{{ loop.index0 }}</th>
+                                            <td>{{ user["fname"] }}</td>
+                                            <td>{{ user["lname"] }}</td>
+                                            <td>{{ user["email"] }}</td>
+                                            <td>{{ user["username"] }}</td>
+                                            <td>{{ user["city"] }}</td>
+                                            <td>{{ user["street"] }}</td>
+                                            <td>
+                                                <a href="{{ url_for('verify', user_id = user["_id"]|string()) }}">Ověřit</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+    {# ================================================================================================= #}
+
+    {% if current_user.role != "Admin" %}
+
+        <h3>Zapůjčené knihy</h3>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Obrázek</th>
+                <th scope="col">Název knihy</th>
+                <th scope="col">Autor</th>
+                <th scope="col">Počet stran</th>
+                <th scope="col">Rok vydání</th>
+                <th scope="col">Termín vrácení</th>
+                <th scope="col"></th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for book in borrowed_books %}
+                <tr>
+                    <th scope="row">{{ loop.index0 }}</th>
+                    <td><img src="/book_picture/{{ book["picture"] }}" height="100"></td>
+                    <td>{{ book["title"] }}</td>
+                    <td>{{ book["author"] }}</td>
+                    <td>{{ book["num_pages"] }}</td>
+                    <td>{{ book["release_year"] }}</td>
+                    <td>{{ borrowed_until[loop.index0] }}</td>
+                    <td>
+                        <a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Vrátit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    {% endif %}
+
+
+    <h3>Databáze knih</h3>
+
+    <form class="form-inline" method="POST"
+          action="{{ url_for('library_catalog', sort_value = sort_value, type=type, search_value=search_value) }}">
+        {{ search_form.csrf_token }}
+        {{ search_form.search_data(class="form-control mr-sm-2", placeholder="Zadejte hledaný výraz") }}
+        {{ search_form.submit(class="btn btn-outline-success my-2 my-sm-0") }}
+    </form>
+    <div class="table-responsive table-striped">
+    <table class="table table-striped table-responsive align-middle">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Obrázek</th>
+            <th scope="col">Název knihy
+                <a href="{{ url_for('library_catalog', sort_value = "title", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('library_catalog', sort_value = "title", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
+            <th scope="col">Autor
+                <a href="{{ url_for('library_catalog', sort_value = "author", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('library_catalog', sort_value = "author", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
+            <th scope="col">Počet stran</th>
+            <th scope="col">Rok vydání
+                <a href="{{ url_for('library_catalog', sort_value = "release_year", type = "asc", search_value=search_value) }}">↑</a>
+                <a href="{{ url_for('library_catalog', sort_value = "release_year", type = "desc", search_value=search_value) }}">↓</a>
+            </th>
+            <th scope="col">Počet volných kusů</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+            <tr>
+                <th scope="row">{{ loop.index0 }}</th>
+                <td><img src="/book_picture/{{ book["picture"] }}" height="100"></td>
+                <td>{{ book["title"] }}</td>
+                <td>{{ book["author"] }}</td>
+                <td>{{ book["num_pages"] }}</td>
+                <td>{{ book["release_year"] }}</td>
+                <td>{{ book["num_pcs"] }}</td>
+                {% if current_user.role == "Admin" %}
+                    <td>
+                        <a href="{{ url_for('edit_book', book_id = book["_id"]|string()) }}">Upravit</a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('delete_book', book_id = book["_id"]|string()) }}">Odstranit</a>
+                    </td>
+                {% else %}
+                    <td>
+                        <a href="{{ url_for('borrow', book_id = book["_id"]|string(), username=user["username"]) }}">Půjčit</a>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+
+{% endblock %}

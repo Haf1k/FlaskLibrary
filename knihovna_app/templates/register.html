@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Registrace
+{% endblock %}
+
+{% set active_page = "register" %}
+
+{% block content %}
+    <div class="container">
+        <form class="form-signin" method = "POST" action="/register">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                <label for = "fname" >Jméno</label>
+                {{ form.fname(class="form-control", placeholder="Křestní jméno") }}
+            </div>
+
+            <div class="form-group">
+                <label for = "lname" >Příjmení</label>
+                {{ form.lname(class="form-control", placeholder="Přijmení") }}
+            </div>
+
+            <div class="form-group">
+                <label for = "birthnum" >Rodné číslo</label>
+                {{ form.birthnum(class="form-control", placeholder="Rodné číslo bez /") }}
+{#                <input type="number" id="birthnum" class="form-control" placeholder="Rodné číslo bez /" minlength="9" maxlength="10"required autofocus>#}
+            </div>
+
+            <div class="form-group">
+                <label for = "email" >Email</label>
+                {{ form.email(class="form-control", placeholder="E-mail") }}
+{#                <input type="email" id="email" class="form-control" placeholder="Email" required autofocus>#}
+            </div>
+
+            <div class="form-group">
+                <label for = "street" >Ulice</label>
+                {{ form.street(class="form-control", placeholder="Ulice") }}
+{#                <input type="text" id="street" class="form-control" placeholder="Ulice" required autofocus>#}
+            </div>
+
+            <div class="form-group">
+                <label for = "city" >Město</label>
+                {{ form.city(class="form-control", placeholder="Město") }}
+{#                <input type="text" id="city" class="form-control" placeholder="Město" required autofocus>#}
+            </div>
+
+            <div class="form-group">
+                <label for = "zip" >PSČ</label>
+                {{ form.zip(class="form-control", placeholder="PSČ") }}
+{#                <input type="text" id="zip" class="form-control" placeholder="PSČ" required autofocus>#}
+            </div>
+
+            <div class="form-group">
+                <label for = "username" >Uživatelské jméno</label>
+                {{ form.username(class="form-control", placeholder="Uživatelské jméno") }}
+{#                <input type="text" id="username" class="form-control" placeholder="Uzivatelske jmeno" required autofocus>#}
+            </div>
+
+            <div class="form-group">
+                <label for = "password" >Heslo</label>
+                {{ form.password(class="form-control", placeholder="Heslo") }}
+{#                <input type="password" id="password" class="form-control" placeholder="Heslo" required autofocus>#}
+            </div>
+
+            <div class="form-group">
+                <label for = "password2" >Potvrzení hesla</label>
+                {{ form.password2(class="form-control", placeholder="Zopakujte heslo") }}
+{#                <input type="password" id="password" class="form-control" placeholder="Heslo" required autofocus>#}
+            </div>
+
+            {% if current_user.role == "Admin" %}
+                <button type="submit" class="btn btn-secondary btn-lg btn-block">Vytvořit účet</button>
+            {% else %}
+                <button type="submit" class="btn btn-secondary btn-lg btn-block">Registruj se</button>
+                <li><a href="{{ url_for('login') }}">Máte účet? Přihlašte se zde.</a></li>
+            {% endif %}
+        </form>
+    </div>
+
+{% endblock %}
