@@ -300,3 +300,5 @@ def delete_user(user_id):
     user.delete_user()
 
     return redirect(url_for("users_catalog", sort_value="default", type="asc", search_value="None"))
+
+#testing some stuff
