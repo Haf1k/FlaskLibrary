@@ -1,12 +1,9 @@
-import base64
 import io
 
 import bcrypt
-from PIL import Image
 from bson import ObjectId
-from flask import render_template, url_for, request, redirect, abort, flash, Response, send_file
+from flask import render_template, url_for, request, redirect, abort, flash, send_file
 from flask_login import login_user, current_user, login_required, logout_user
-from matplotlib import pyplot as plt
 
 from config import db
 from forms import RegistrationForm, LoginForm, CreateBookForm, EditUser, SearchForm
@@ -50,6 +47,8 @@ def login():
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegistrationForm(csrf_enabled=False)
+    if form.birthnum.data is None:
+        return render_template('register.html', form=form)
     if form.validate_on_submit():
         try:
             hash_password = bcrypt.hashpw(form.password.data.encode('utf-8'), bcrypt.gensalt())
@@ -63,7 +62,8 @@ def register():
         except:
             flash("Uživatel s tímto uživatelským jménem nebo e-mailem již existuje", "danger")
             return render_template('register.html', form=form)
-    flash("Oveřte zadané údaje", "danger")
+    else:
+        flash("Oveřte zadané údaje", "danger")
     return render_template('register.html', form=form)
 
 
@@ -95,15 +95,18 @@ def library_catalog(sort_value, type, search_value):
     unverified_users = db.users.find({"activated": False})
     if current_user.role == "Admin":
         if book_form.validate_on_submit():
-            # try:
-            book = create_book(book_form).__dict__
-            book["_id"] = ObjectId()
-            send_image_to_db(book_form)
-            book["picture"] = book_form.picture.data.filename
-            db.books.insert_one(book)
-            flash("Kniha úspěšně přidána", "success")
-        # except Exception:
-        #     flash("Chyba při přidávání knihy", "danger")
+            try:
+                book = create_book(book_form).__dict__
+                book["_id"] = ObjectId()
+                send_image_to_db(book_form)
+                if book_form.picture.data is None:
+                    book["picture"] = None
+                else:
+                    book["picture"] = book_form.picture.data.filename
+                db.books.insert_one(book)
+                flash("Kniha úspěšně přidána", "success")
+            except Exception:
+                flash("Chyba při přidávání knihy", "danger")
 
         if len(list(unverified_users.clone())) != 0:
             flash(f"Počet uživatelů k ověření: {len(list(unverified_users.clone()))}", "warning")
@@ -115,11 +118,11 @@ def library_catalog(sort_value, type, search_value):
 
     books = books_listing(search_value, sort_value, type)
 
-    borrowed_books = books_borrowed_by_user(username=current_user.username)
+    borrowed_books, borrowed_until = books_borrowed_by_user(username=current_user.username)
 
     return render_template('library_catalog.html', books=books, borrowed_books=borrowed_books,
                            book_form=book_form, unverified_users=unverified_users, user=current_user,
-                           search_form=search_form, sort_value=sort_value, type=type, search_value=search_value)
+                           search_form=search_form, sort_value=sort_value, type=type, search_value=search_value, borrowed_until=borrowed_until )
 
 
 @app.route('/users_catalog/<sort_value>/<type>/<search_value>', methods=['GET', 'POST'])
@@ -154,13 +157,13 @@ def edit_user(user_id):
         except Exception:
             flash("Nepodařilo se upravit", "warning")
 
-    borrowed_books = books_borrowed_by_user(user_id=user_id)
+    borrowed_books, borrowed_until = books_borrowed_by_user(user_id=user_id)
 
     user = make_user_object(db.users.find_one({"_id": ObjectId(user_id)}))
     user_history = user.user_history()
     user = vars(user)
     return render_template("edit_user.html", user=user, edit_form=edit_form, borrowed_books=borrowed_books,
-                           user_history=user_history)
+                           user_history=user_history, borrowed_until=borrowed_until)
 
 
 @app.route('/users_catalog/edit_user/give_user_book/<user_id>/<sort_value>/<type>/<search_value>',
@@ -190,13 +193,13 @@ def edit_book(book_id):
         abort(403)
     edit_book_form = CreateBookForm(csrf=False)
     if request.method == 'POST':
-        try:
+        # try:
             book = make_book_object(db.books.find_one({"_id": ObjectId(book_id)}))
             book.update_book(edit_book_form)
             send_image_to_db(edit_book_form)
             flash("Úspěšně upraveno", "success")
-        except Exception:
-            flash("Nepodařilo se upravit", "warning")
+        # except Exception:
+        #     flash("Nepodařilo se upravit", "warning")
     book = db.books.find_one({"_id": ObjectId(book_id)})
 
     borrowed_by_users = users_with_borrowed_book(book_id)
@@ -267,6 +270,26 @@ def delete_book(book_id):
     return redirect(url_for("library_catalog", sort_value="default", type="asc", search_value="None"))
 
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+
+@app.route('/book_picture/<filename>')
+def serve_img(filename=None):
+    if filename is None or filename == "" or filename =="None":
+        filename = "No_Image_Available.jpg"
+    img = io.BytesIO(db.images.find_one({"filename": filename})["data"])
+    return send_file(img, mimetype="jpeg")
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
 @app.route('/users_catalog/delete/<user_id>', methods=['GET', 'POST'])
 @login_required
 def delete_user(user_id):
@@ -277,25 +300,3 @@ def delete_user(user_id):
     user.delete_user()
 
     return redirect(url_for("users_catalog", sort_value="default", type="asc", search_value="None"))
-
-
-@app.route('/book_picture/<filename>')
-def serve_img(filename):
-    if filename is not None:
-
-        # img = db.images.find_one({"filename": filename})["data"]
-        img = io.BytesIO(db.images.find_one({"filename": filename})["data"])
-        # encoded_img = base64.b64encode(img)
-    return send_file(img, mimetype="jpeg")
-
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('home'))

@@ -71,6 +71,7 @@
             <th scope="col">Autor</th>
             <th scope="col">Počet stran</th>
             <th scope="col">Rok vydání</th>
+            <th scope="col">Termín vrácení</th>
             <th scope="col"></th>
 
         </tr>
@@ -79,11 +80,12 @@
         {% for book in borrowed_books %}
             <tr>
                 <th scope="row">{{ loop.index0 }}</th>
-                <td>{{ book["picture"] }}</td>
+                <td><img src="/book_picture/{{ book["picture"] }}" height="100"></td>
                 <td>{{ book["title"] }}</td>
                 <td>{{ book["author"] }}</td>
                 <td>{{ book["num_pages"] }}</td>
                 <td>{{ book["release_year"] }}</td>
+                <td>{{ borrowed_until[loop.index0] }}</td>
                 <td><a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Odebrat</a>
                 </td>
             </tr>

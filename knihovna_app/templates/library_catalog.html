@@ -142,6 +142,7 @@
                 <th scope="col">Autor</th>
                 <th scope="col">Počet stran</th>
                 <th scope="col">Rok vydání</th>
+                <th scope="col">Termín vrácení</th>
                 <th scope="col"></th>
 
             </tr>
@@ -150,11 +151,12 @@
             {% for book in borrowed_books %}
                 <tr>
                     <th scope="row">{{ loop.index0 }}</th>
-                    <td><img src="{{ book["picture"] }}"></td>
+                    <td><img src="/book_picture/{{ book["picture"] }}" height="100"></td>
                     <td>{{ book["title"] }}</td>
                     <td>{{ book["author"] }}</td>
                     <td>{{ book["num_pages"] }}</td>
                     <td>{{ book["release_year"] }}</td>
+                    <td>{{ borrowed_until[loop.index0] }}</td>
                     <td>
                         <a href="{{ url_for('return_book', book_id = book["_id"]|string(), username=user["username"]) }}">Vrátit</a>
                     </td>
@@ -174,8 +176,8 @@
         {{ search_form.search_data(class="form-control mr-sm-2", placeholder="Zadejte hledaný výraz") }}
         {{ search_form.submit(class="btn btn-outline-success my-2 my-sm-0") }}
     </form>
-    <div class="table-responsive">
-    <table class="table table-responsive align-middle">
+    <div class="table-responsive table-striped">
+    <table class="table table-striped table-responsive align-middle">
         <thead>
         <tr>
             <th scope="col">#</th>
@@ -201,7 +203,6 @@
         {% for book in books %}
             <tr>
                 <th scope="row">{{ loop.index0 }}</th>
-{#                <td>{{ book["picture"] }}</td>#}
                 <td><img src="/book_picture/{{ book["picture"] }}" height="100"></td>
                 <td>{{ book["title"] }}</td>
                 <td>{{ book["author"] }}</td>

@@ -3,6 +3,7 @@ from datetime import datetime
 
 from PIL import Image
 from bson import ObjectId
+
 from knihovna_app.config import db
 from models import User, Book
 
@@ -93,7 +94,8 @@ def books_borrowed_by_user(username=None, user_id=None):
         borrowed_books = db.users.find_one({"_id": ObjectId(user_id)})["borrowed_books"]
     else:
         return
-    return [db.books.find_one({"_id": ObjectId(each["borrowed_book_id"])}) for each in borrowed_books]
+    return [db.books.find_one({"_id": ObjectId(each["borrowed_book_id"])}) for each in borrowed_books], [
+        datetime.fromisoformat(each["borrowed_until"]).date() for each in borrowed_books]
 
 
 def users_with_borrowed_book(book_id=None):

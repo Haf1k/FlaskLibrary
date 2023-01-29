@@ -161,15 +161,19 @@ class Book:
         return
 
     def update_book(self, edit_book_form):
+
+        if edit_book_form.picture.data is not None:
+            db.books.update_one({"_id": ObjectId(self._id)},
+                                {"$set": {"picture": edit_book_form.picture.data.filename}})
+
         db.books.update_one({"_id": ObjectId(self._id)},
                             {"$set": {"title": edit_book_form.title.data,
                                       "author": edit_book_form.author.data,
                                       "release_year": str(edit_book_form.release_year.data),
                                       "num_pages": edit_book_form.num_pages.data,
-                                      "num_pcs": edit_book_form.num_pcs.data,
-                                      "picture": edit_book_form.picture.data.filename
+                                      "num_pcs": edit_book_form.num_pcs.data
                                       }})
-
+        return
 
     def return_book(self):
         return
@@ -182,5 +186,7 @@ class Book:
             flash("Knihu nelze smazat, jelikož ji má někdo půjčenou.", 'danger')
         else:
             db.books.delete_one({"_id": ObjectId(self._id)})
+            if self.picture != "No_Image_Available.jpg":
+                db.images.delete_one({"filename": self.picture})
             flash("Kniha byla úspěšně smazána", "success")
         return

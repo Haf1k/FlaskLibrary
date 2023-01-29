@@ -13,7 +13,7 @@ class RegistrationForm(FlaskForm):
     email = EmailField('E-mail', validators=[DataRequired(), Email(message="Zadejte platný email."), Length(max=30)])
     street = StringField('Ulice', validators=[DataRequired(), Length(max=30)])
     city = StringField('Město', validators=[DataRequired(), Length(max=30)])
-    zip = IntegerField('PSČ', validators=[DataRequired()])
+    zip = IntegerField('PSČ', validators=[DataRequired(), NumberRange(min=1)])
     username = StringField('Uživatelské jméno', validators=[DataRequired(), Length(max=30)])
     password = PasswordField('Heslo', validators=[DataRequired()])
     password2 = PasswordField('Zopakujte heslo',
