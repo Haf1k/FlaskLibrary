@@ -18,3 +18,4 @@ db.users.create_index(
     [('fname', 'text'), ('lname', 'text'), ('birthnum', 'text'), ('street', 'text'), ('city', 'text'), ('zip', 'text')])
 
 # db.users.create_index('borrowed_books.time_stamp', expireAfterSeconds=60) # is deleting whole user
+#dadsdasdawdsd
